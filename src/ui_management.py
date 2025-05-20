@@ -1,5 +1,7 @@
-# ui_patient_management.py
+
 # Tkinter-based UI for the hospital management system
+
+# ui_management.py
 
 import datetime
 import os
@@ -9,11 +11,12 @@ import csv
 from patient_management import PatientManagementSystem
 
 class PatientManagementApp:
-    """Tkinter GUI for login and patient management."""
     def __init__(self, root):
         self.root = root
         self.root.title("Patient Management Login")
-        self.credentials = self.load_credentials("data/Credentials.csv")
+        self.data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+        self.output_dir = os.path.join(os.path.dirname(__file__), '..', 'output')
+        self.credentials = self.load_credentials(os.path.join(self.data_dir, "Credentials.csv"))
         self.system = None
         self.username = None
         self.login_time = None
@@ -21,7 +24,6 @@ class PatientManagementApp:
         self.init_login()
 
     def load_credentials(self, path):
-        """Load credentials from CSV."""
         creds = {}
         with open(path, newline='') as f:
             reader = csv.DictReader(f)
@@ -30,7 +32,6 @@ class PatientManagementApp:
         return creds
 
     def init_login(self):
-        """Show login form."""
         for widget in self.root.winfo_children():
             widget.destroy()
         tk.Label(self.root, text="Username:").grid(row=0, column=0)
@@ -42,33 +43,34 @@ class PatientManagementApp:
         tk.Button(self.root, text="Login", command=self.validate_login).grid(row=2, columnspan=2)
 
     def validate_login(self):
-        """Validate credentials and load menu."""
         username = self.username_entry.get().strip()
         password = self.password_entry.get().strip()
         if username in self.credentials and self.credentials[username][0] == password:
             self.username = username
             self.login_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.role = self.credentials[username][1]
-            self.system = PatientManagementSystem("data/Patient_data.csv")
-            self.system.load_notes("data/Notes.csv")
+            patient_data_path = os.path.join(self.data_dir, "Patient_data.csv")
+            notes_path = os.path.join(self.data_dir, "Notes.csv")
+            self.system = PatientManagementSystem(patient_data_path)
+            self.system.load_notes(notes_path)
             self.show_menu()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
 
     def show_menu(self):
-        """Display menu based on role."""
         for widget in self.root.winfo_children():
             widget.destroy()
-        if self.role in ("admin", "management"):
-            actions = ["Generate Statistics", "Count Visits", "Exit"]
+        if self.role == "admin":
+            actions = ["Count Visits", "Generate Statistics", "Exit"]
+        elif self.role == "management":
+            actions = ["Generate Statistics", "Exit"]
         else:
             actions = ["Retrieve Patient", "Add Patient", "Remove Patient", "Count Visits", "View Note", "Exit"]
         for action in actions:
             tk.Button(self.root, text=action, width=25, command=lambda a=action: self.execute_action(a)).pack(pady=5)
 
     def log_action(self, action_name):
-        """Log user actions to a CSV file."""
-        log_file = "output/usage_log.csv"
+        log_file = os.path.join(self.output_dir, "usage_log.csv")
         headers = ["Username", "Role", "Action", "Login Time", "Action Time"]
         action_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         row = [self.username, self.role, action_name, self.login_time, action_time]
@@ -80,7 +82,6 @@ class PatientManagementApp:
             writer.writerow(row)
 
     def display_result(self, text):
-        """Show result in a popup window."""
         w = tk.Toplevel(self.root)
         w.title("Result")
         box = tk.Text(w, wrap="word", height=20, width=70)
@@ -89,13 +90,12 @@ class PatientManagementApp:
         box.pack(padx=10, pady=10)
 
     def execute_action(self, action):
-        """Handle menu actions."""
         self.log_action(action)
         if action == "Exit":
             self.root.quit()
         elif action == "Generate Statistics":
             self.system.generate_statistics()
-            self.display_result("Statistics chart saved to visit_stats.png")
+            self.display_result("Statistics chart saved to output/visit_stats.png")
         elif action == "Count Visits":
             date = simpledialog.askstring("Date", "Enter date (YYYY-MM-DD):")
             if not date:
@@ -111,9 +111,9 @@ class PatientManagementApp:
             pid = simpledialog.askstring("Retrieve", "Enter Patient ID:")
             if not pid:
                 return
-            out = "output/output.txt"
-            ok = self.system.retrieve_patient(pid, out)
-            data = open(out).read() if ok else f"Patient {pid} not found."
+            out_path = os.path.join(self.output_dir, "output.txt")
+            ok = self.system.retrieve_patient(pid, out_path)
+            data = open(out_path).read() if ok else f"Patient {pid} not found."
             self.display_result(data)
         elif action == "Add Patient":
             pid = simpledialog.askstring("Add Patient", "Enter Patient ID:")
