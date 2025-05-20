@@ -1,5 +1,4 @@
 # department.py
-
 class Department:
     """A department contains a set of patients."""
     def __init__(self, name):
