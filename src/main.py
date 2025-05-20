@@ -1,6 +1,4 @@
 # main.py
-# Entry point for the Patient Management System UI
-
 import tkinter as tk
 from ui_management import PatientManagementApp
 
