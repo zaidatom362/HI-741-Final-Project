@@ -1,8 +1,4 @@
-
-# Represents a single patient visit
-
 # visit.py
-
 class Visit:
     """Stores details of a patient visit."""
     def __init__(self, visit_id, visit_time, department, gender, race, age, ethnicity, insurance, zip_code, chief_complaint):
