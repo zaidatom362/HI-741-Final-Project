@@ -1,8 +1,4 @@
-
-# Represents a patient with their visits and notes
-
 # patient.py
-
 class Patient:
     """A patient with a list of visits and notes."""
     def __init__(self, patient_id):
