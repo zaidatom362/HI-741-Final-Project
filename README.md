@@ -1,116 +1,108 @@
-# HI-741-Final-Project
-Hospital Management System
-==========================
+🏥 Hospital Clinical Data Warehouse
 
-A role-based clinical data warehouse with a user-friendly Tkinter UI for managing patient visits, notes, and key statistics.
+Welcome! This project is a user-friendly hospital management system built with Python and Tkinter. It streamlines patient visit tracking, clinical notes, and hospital statistics, all while keeping data secure and access role-based.
+🚀 What Does This App Do?
 
-Overview
---------
-Supports four user roles-clinician, nurse, admin, and management-each with a customized menu of actions:
+Role-based login: Only see what you’re allowed to see.
 
-• Clinician & Nurse:
-  - Add Patient  
-  - Remove Patient  
-  - Retrieve Patient  
-  - Count Visits  
-  - View Note  
+Clinician/Nurse: Add, remove, and retrieve patients, view clinical notes, and count visits.
 
-• Admin:
-  - Count Visits  
+Admin: Count visits and (optionally) generate statistics.
 
-• Management:
-  - Generate Key Statistics  
-  - Count Visits  
+Management: Generate hospital statistics.
 
-All changes update the master patient file, clinical notes are linked by visit date, and every action is logged for auditing.
+Everything happens in a modern, simple GUI. No terminal commands needed after launch.
 
-Features
---------
-- Secure login using fixed-width credentials  
-- Role-based menus enforcing access rules  
-- Add, remove, and retrieve patient visits  
-- View clinical notes by date  
-- Count daily visits  
-- Generate and save visit-trend bar charts  
-- Audit logging of all user actions  
+🗂️ Project Structure
 
-Project Structure
------------------
-project-root/  
-├── run_app.py            # Entry point to launch the GUI  
-├── gui_app.py            # Tkinter interface and user workflows  
-├── core_system.py        # Backend logic for patients, notes, and statistics  
-├── support_utils.py      # Helpers: directories and date parsing  
-├── auth_user.py          # Models authenticated user and permissions  
-├── ward_department.py    # Department grouping for patients  
-├── customer_patient.py   # Patient model holding visits & notes  
-├── appointment_visit.py  # Visit data model  
-├── clinical_note.py      # Clinical note data model  
-├── data/                 # Input files (unchanged)  
-│   ├── Credentials.csv  
-│   ├── Patient_data.csv  
-│   └── Notes.csv  
-└── output/               # Created at runtime for logs and charts  
+```
+project-root/
+├── src/
+│   ├── main.py
+│   ├── department.py
+│   ├── note.py
+│   ├── patient.py
+│   ├── patient_management.py
+│   ├── ui_management.py
+│   ├── user.py
+│   ├── utils.py
+│   ├── visit.py
+├── data/
+│   ├── Credentials.csv
+│   ├── Patient_data.csv
+│   ├── Notes.csv
+├── output/
+│   ├── usage_log.csv
+│   ├── visit_stats.png
+│   ├── output.txt
+├── UML_Diagram.png
+├── README.md
+```
+🏃‍♂️ How to Run
 
-Prerequisites
--------------
-- Python 3.8+  
-- tkinter (bundled with Python)  
-- matplotlib (`pip install matplotlib`)  
+Install requirements:
 
-Installation
-------------
-1. Clone or download the repository.  
-2. (Optional) Create and activate a virtual environment:  
+```pip install matplotlib```
 
-python -m venv venv
-source venv/bin/activate # macOS/Linux
-venv\Scripts\activate.bat # Windows
+Go to the code folder:
 
-3. Install dependencies:  
-pip install matplotlib
-Usage
------
-1. Ensure `data/` contains:
-- Credentials.csv
-- Patient_data.csv
-- Notes.csv  
+```cd src```
 
-2. Run the application:
+Start the app
 
-3. Login using a valid username/password from `Credentials.csv`.  
-4. Select actions from the role-specific menu.  
-5. Follow prompts to add/remove patients, retrieve records, count visits, view notes, or generate statistics.  
-6. Logout or close the window to exit.  
+```python main.py```
 
-Data Files
-----------
-- Credentials.csv  
-Fixed-width concatenated entries: username + password (8 chars) + role (no headers).  
-- Patient_data.csv  
-CSV columns: Patient_ID, Visit_ID, Visittime, Visit_department, Gender, Race, Age, Ethnicity, Insurance, Zip_code, Chief_complaint  
-- Notes.csv  
-Fixed-width columns: PatientID(12) + VisitID(12) + NoteID(12) + Notetext(rest)  
+Login using a username and password from ../data/Credentials.csv.
 
-UML Diagram
------------
-(See UML_Diagram.png in the repository for detailed class relationships.)  
+Please enter the date when asked for, in the exact date format the prompt asks you (e.g., YYYY-MM-DD).If you use the wrong format, you may get an error or no results.
 
-Logging & Outputs
------------------
-- output/usage_log.csv  
-Records: Username, Role, Action, Login Time, Action Time  
-- output/visit_stats.png  
-Bar chart of visits per day (all time or last N days)  
+👤 User Roles & Permissions
+Role	What They Can Do
+admin	Count Visits, (optionally) Generate Statistics
+clinician	Add/Remove/Retrieve Patient, View Note, Count Visits
+nurse	Add/Remove/Retrieve Patient, View Note, Count Visits
+management	Generate Statistics
+📑 Data & Outputs
+```
+data/Credentials.csv: Usernames, passwords, and roles.
 
-Contributing
-------------
-1. Fork the repo.  
-2. Create a feature branch: `git checkout -b feature/YourFeature`  
-3. Commit changes: `git commit -m "Add feature"`  
-4. Push: `git push origin feature/YourFeature`  
-5. Open a pull request.  
+data/Patient_data.csv: All patient and visit info.
 
-License
--------
-MIT License. See LICENSE file for details.
+data/Notes.csv: Clinical notes.
+
+output/usage_log.csv: Who did what and when.
+
+output/visit_stats.png: Hospital visit statistics chart.
+
+output/output.txt: Patient info export.
+```
+🖼️ UML Diagram
+
+See UML_Diagram.png for a visual map of all classes and their relationships.
+
+Key connections:
+
+The system manages patients and departments.
+
+Patients have visits and notes.
+
+Visits are linked to departments.
+
+Notes are linked to visits.
+
+🛠️ Troubleshooting
+
+KeyError? Double-check your CSV column names (like Zip_code) match exactly.
+
+Login not working? Make sure your username and password are in Credentials.csv.
+
+GUI won’t start? Make sure you’re running python main.py from inside src/ and have installed all requirements.
+
+Date errors? Always enter the date exactly as the prompt specifies (usually YYYY-MM-DD).
+
+📬 Questions?
+
+If you get stuck, check the logs in output/usage_log.csv or contact me.
+📝 License
+
+MIT License. See LICENSE for details.
