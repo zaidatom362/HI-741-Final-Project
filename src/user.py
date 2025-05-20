@@ -1,5 +1,6 @@
-# user.py
+
 # Represents a user and their allowed actions
+# user.py
 
 class User:
     """A user with a role and permission checking."""
@@ -8,9 +9,8 @@ class User:
         self.role = role
 
     def can_perform(self, action):
-        """Check if the user can perform a given action."""
         permissions = {
-            'admin': ['count_visits'],
+            'admin': ['count_visits', 'generate_statistics'],
             'clinician': ['add_patient', 'remove_patient', 'retrieve_patient', 'view_note', 'count_visits'],
             'nurse': ['add_patient', 'remove_patient', 'retrieve_patient', 'view_note', 'count_visits'],
             'management': ['generate_statistics']
