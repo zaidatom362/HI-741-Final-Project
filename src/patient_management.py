@@ -1,7 +1,4 @@
-# Main backend for managing patients, visits, and statistics
-
 # patient_management.py
-
 import csv
 import datetime
 import os
@@ -22,6 +19,7 @@ class PatientManagementSystem:
         self.load_data()
 
     def load_data(self):
+        """Load all patients and visits from the CSV file."""
         try:
             with open(self.input_path, 'r', newline='') as file:
                 reader = csv.DictReader(file)
@@ -58,6 +56,7 @@ class PatientManagementSystem:
             print("Error: Data file not found.")
 
     def _safe_int(self, s, pid):
+        """Convert string to int, or return None if invalid."""
         try:
             return int(s)
         except ValueError:
@@ -65,6 +64,7 @@ class PatientManagementSystem:
             return None
 
     def load_notes(self, note_file_path):
+        """Attach notes to patients from the notes CSV."""
         try:
             with open(note_file_path, 'r', newline='') as file:
                 reader = csv.DictReader(file)
@@ -81,6 +81,7 @@ class PatientManagementSystem:
             print(f"Error loading notes: {e}")
 
     def _parse_date(self, s: str) -> datetime.date:
+        """Parse a date string in common formats."""
         for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m-%d-%Y"):
             try:
                 return datetime.datetime.strptime(s.strip(), fmt).date()
@@ -89,6 +90,7 @@ class PatientManagementSystem:
         raise ValueError(f"Unknown date format: {s!r}")
 
     def review_date(self, date_str: str) -> int | None:
+        """Count the number of visits on a given date."""
         try:
             target = self._parse_date(date_str)
         except ValueError:
@@ -105,6 +107,7 @@ class PatientManagementSystem:
         return count
 
     def view_note(self, patient_id: str, date_str: str) -> str | None:
+        """Return all notes for a patient on a specific date."""
         if patient_id not in self.patients:
             return None
         try:
@@ -124,6 +127,7 @@ class PatientManagementSystem:
         return "\n\n".join(results) if results else None
 
     def retrieve_patient(self, patient_id: str, output_file: str) -> bool:
+        """Write all info for a patient to an output file."""
         if patient_id not in self.patients:
             return False
         patient = self.patients[patient_id]
@@ -131,7 +135,7 @@ class PatientManagementSystem:
             with open(output_file, 'w') as f:
                 f.write(f"Patient ID: {patient.patient_id}\n")
                 for visit in patient.visits:
-                    f.write(f"Visit ID: {visit.visit_id}, Date: {visit.visit_time}, Dept: {visit.department.name}\n")
+                    f.write(f"Visit ID: {visit.visit_id}, Date: {visit.visit_time}, Dept: {visit.department.name}, Chief Complaint: {visit.chief_complaint}\n")
                 for note in patient.notes:
                     f.write(f"Note ID: {note.note_id}, Text: {note.note_text}\n")
             return True
@@ -139,6 +143,7 @@ class PatientManagementSystem:
             return False
 
     def add_visit_gui(self, patient_id, visit_time, dept_name, gender, race, age, ethnicity, insurance, zip_code, complaint):
+        """Add a new visit from the UI."""
         pid = patient_id.strip()
         if pid not in self.patients:
             self.patients[pid] = Patient(pid)
@@ -176,6 +181,7 @@ class PatientManagementSystem:
             })
 
     def remove_patient(self, patient_id: str):
+        """Remove a patient and their visits from the data."""
         pid = patient_id.strip()
         if pid in self.patients:
             del self.patients[pid]
@@ -190,6 +196,7 @@ class PatientManagementSystem:
                     writer.writerow(row)
 
     def generate_statistics(self):
+        """Create and save charts for visit and demographic statistics."""
         date_counter = Counter()
         insurance_counter = Counter()
         gender_counter = Counter()
@@ -235,8 +242,6 @@ class PatientManagementSystem:
         axs[1, 1].grid(axis="y", linestyle="--", alpha=0.5)
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-        # Save to output/visit_stats.png relative to src/
-        output_path = os.path.join(os.path.dirname(__file__), '..', 'output', 'visit_stats.png')
-        plt.savefig(output_path)
+        plt.savefig("output/visit_stats.png")
         plt.close(fig)
-        print("Chart saved to output/visit_stats.png.")
+        print("Chart saved to visit_stats.png.")
